@@ -1,0 +1,62 @@
+# SPDX-License-Identifier: MIT
+# Checks server.toml and builds your launcher on a GitHub-hosted Windows runner.
+# The launcher's source comes from aeterna/nakara-oss at LAUNCHER_REF; bump it when a new launcher release is out.
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  LAUNCHER_REF: launcher-v0.1.0
+
+jobs:
+  windows:
+    name: check and build (windows)
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Your profile
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: owner
+          persist-credentials: false
+      - name: The launcher source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: aeterna/nakara-oss
+          ref: ${{ env.LAUNCHER_REF }}
+          path: oss
+          persist-credentials: false
+      - name: Rust toolchain
+        run: |
+          $ErrorActionPreference = "Stop"
+          $PSNativeCommandUseErrorActionPreference = $true
+          rustup toolchain install 1.98.1 --profile minimal
+          rustup default 1.98.1
+      - name: Check server.toml
+        working-directory: oss/launcher
+        run: |
+          cargo run --locked -q -p launcher-core --bin profile-check -- "$env:GITHUB_WORKSPACE/owner/server.toml" --root "$env:GITHUB_WORKSPACE/owner"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build
+        working-directory: oss/launcher
+        run: |
+          $env:AETERNA_LAUNCHER_PROFILE = "$env:GITHUB_WORKSPACE/owner/server.toml"
+          cargo build --locked --release -p launcher-ui
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item target/release/aeterna-launcher.exe "$env:GITHUB_WORKSPACE/launcher.exe"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: launcher
+          path: launcher.exe
+          if-no-files-found: error
+          retention-days: 7

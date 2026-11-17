@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT
+# Your launcher's profile. Edit the values below and commit; the build workflow checks and builds it.
+# Every field: https://github.com/aeterna/nakara-oss/blob/main/launcher/schema/server.schema.json
+# A profile is data only; it cannot run code.
+schema = 1
+
+[server]
+id = "example-rp"
+name = "Example RP"
+game = "fivem-legacy"
+connect = "play.example.com:30120"
+operator = "Example RP Team"
+contact_email = "team@example.com"
+# Put your fork's ed25519 update public key here (omitted or empty disables updates).
+# update_keys = ["<64 hex from: launcher-sign keygen>"]
+
+[theme]
+template = "classic"
+accent = "#3f6fd1"
+
+[features]
