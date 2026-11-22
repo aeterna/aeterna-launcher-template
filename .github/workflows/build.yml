@@ -13,7 +13,8 @@ permissions:
   contents: read
 
 env:
-  LAUNCHER_REF: launcher-v0.1.0
+  # A commit, not a tag, so a moved tag cannot change what you build. a0debac5… = launcher-v0.2.0.
+  LAUNCHER_REF: a0debac5fbe51732394d16cb23a71e1c221415c2
 
 jobs:
   windows:
