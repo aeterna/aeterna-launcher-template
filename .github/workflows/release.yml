@@ -24,8 +24,8 @@ permissions:
   contents: read
 
 env:
-  # Keep in step with build.yml. A commit, not a tag. 11770ea8… = launcher-v0.1.0.
-  LAUNCHER_REF: 11770ea8e914c944de35326f12512c12ffb21913
+  # Keep in step with build.yml. A commit, not a tag. a0debac5… = launcher-v0.2.0.
+  LAUNCHER_REF: a0debac5fbe51732394d16cb23a71e1c221415c2
 
 jobs:
   build:
